@@ -7,7 +7,9 @@ import {
   CheckSquare,
   Hash,
   Star,
-  ToggleLeft
+  ToggleLeft,
+  Camera,
+  MapPin
 } from 'lucide-react';
 
 interface QuestionTypeSelectorProps {
@@ -68,6 +70,18 @@ export const QuestionTypeSelector: React.FC<QuestionTypeSelectorProps> = ({
       label: 'Có / Không',
       desc: 'Nút chọn nhanh 2 trạng thái Có / Không',
       icon: <ToggleLeft className="w-5 h-5" />
+    },
+    {
+      type: 'image',
+      label: 'Chụp ảnh hiện trường',
+      desc: 'Chụp ảnh thực tế từ camera thiết bị',
+      icon: <Camera className="w-5 h-5" />
+    },
+    {
+      type: 'location',
+      label: 'Tọa độ GPS',
+      desc: 'Lấy vị trí GPS chính xác từ vệ tinh',
+      icon: <MapPin className="w-5 h-5" />
     }
   ];
 

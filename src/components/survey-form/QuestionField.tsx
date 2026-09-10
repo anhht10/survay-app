@@ -7,6 +7,8 @@ import { MultipleChoiceInput } from './inputs/MultipleChoiceInput';
 import { NumberInput } from './inputs/NumberInput';
 import { RatingInput } from './inputs/RatingInput';
 import { YesNoInput } from './inputs/YesNoInput';
+import { ImageInput } from './inputs/ImageInput';
+import { LocationInput } from './inputs/LocationInput';
 import { AlertCircle } from 'lucide-react';
 
 interface QuestionFieldProps {
@@ -87,6 +89,24 @@ export const QuestionField: React.FC<QuestionFieldProps> = ({
           <YesNoInput
             question={question}
             value={value as boolean}
+            onChange={onChange}
+            disabled={disabled}
+          />
+        );
+      case 'image':
+        return (
+          <ImageInput
+            question={question}
+            value={(value as string) || ''}
+            onChange={onChange}
+            disabled={disabled}
+          />
+        );
+      case 'location':
+        return (
+          <LocationInput
+            question={question}
+            value={(value as string) || ''}
             onChange={onChange}
             disabled={disabled}
           />

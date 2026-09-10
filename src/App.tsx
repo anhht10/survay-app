@@ -10,6 +10,7 @@ import { ResponsesPage } from './pages/ResponsesPage';
 import { useSync } from './hooks/useSync';
 import { syncManager } from './services/sync/syncManager';
 import { seedInitialDataIfNeeded } from './db/database';
+import { NotificationService } from './services/notification/notificationService';
 
 type ViewMode = 'dashboard' | 'builder' | 'preview' | 'public_survey' | 'responses';
 
@@ -24,6 +25,7 @@ export const App: React.FC = () => {
   // Khởi động: Kích hoạt đồng bộ các phản hồi chưa gửi khi mở App (App Startup)
   useEffect(() => {
     seedInitialDataIfNeeded();
+    NotificationService.init();
     syncManager.syncPendingResponses();
   }, []);
 

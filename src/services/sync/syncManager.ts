@@ -3,6 +3,7 @@ import { surveyApi } from '../api/surveyApi';
 import { networkDetector } from './networkDetector';
 import { BACKOFF_INTERVALS_MS, MAX_AUTO_RETRY_ATTEMPTS } from '../../config/constants';
 import { ENV } from '../../config/env';
+import { NotificationService } from '../notification/notificationService';
 
 type SyncListener = (syncing: boolean, message?: string) => void;
 
@@ -114,6 +115,7 @@ class SyncManager {
       this.log(`Tìm thấy ${candidates.length} phản hồi cần kiểm tra đồng bộ.`);
 
       const now = Date.now();
+      let successCount = 0;
 
       for (const response of candidates) {
         // Kiểm tra điều kiện Backoff nếu là lần retry tự động
@@ -134,7 +136,14 @@ class SyncManager {
         }
 
         // Tiến hành sync từng response
-        await this.syncSingleResponse(response.id);
+        const ok = await this.syncSingleResponse(response.id);
+        if (ok) {
+          successCount++;
+        }
+      }
+
+      if (successCount > 0) {
+        NotificationService.notifySyncSuccess(successCount);
       }
     } catch (err) {
       this.log('Lỗi không mong muốn trong syncPendingResponses:', err);
@@ -153,7 +162,11 @@ class SyncManager {
       return false;
     }
 
-    return await this.syncSingleResponse(responseId);
+    const ok = await this.syncSingleResponse(responseId);
+    if (ok) {
+      NotificationService.notifySyncSuccess(1);
+    }
+    return ok;
   }
 
   /**

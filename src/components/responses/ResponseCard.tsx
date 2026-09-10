@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { SurveyResponse } from '../../types/response';
 import { SyncStatusBadge } from './SyncStatusBadge';
 import { formatDate, formatAnswerValue } from '../../utils/formatters';
-import { Trash2, ChevronDown, ChevronUp, RotateCw } from 'lucide-react';
+import { Trash2, ChevronDown, ChevronUp, RotateCw, MapPin, ExternalLink } from 'lucide-react';
 import { syncManager } from '../../services/sync/syncManager';
 
 interface ResponseCardProps {
@@ -97,16 +97,56 @@ export const ResponseCard: React.FC<ResponseCardProps> = ({
           <div className="text-[11px] font-mono text-slate-400 mb-1">
             Mã ID: {response.id}
           </div>
-          {response.answers.map((ans, idx) => (
-            <div key={idx} className="bg-slate-50 p-2.5 rounded-xl">
-              <span className="font-bold text-slate-700 block mb-0.5">
-                Câu hỏi {ans.questionId}:
-              </span>
-              <span className="text-slate-900 font-medium whitespace-pre-wrap">
-                {formatAnswerValue(ans.value)}
-              </span>
-            </div>
-          ))}
+          {response.answers.map((ans, idx) => {
+            const isImage = typeof ans.value === 'string' && ans.value.startsWith('data:image/');
+            let parsedGps: { latitude: number; longitude: number; accuracy?: number } | null = null;
+            if (typeof ans.value === 'string' && ans.value.includes('"latitude"') && ans.value.includes('"longitude"')) {
+              try {
+                parsedGps = JSON.parse(ans.value);
+              } catch {}
+            }
+
+            return (
+              <div key={idx} className="bg-slate-50 p-2.5 rounded-xl">
+                <span className="font-bold text-slate-700 block mb-0.5">
+                  Câu hỏi {ans.questionId}:
+                </span>
+                {isImage ? (
+                  <div className="mt-1">
+                    <img
+                      src={ans.value as string}
+                      alt="Ảnh chụp hiện trường"
+                      className="max-h-48 max-w-full rounded-lg border border-slate-200 object-contain bg-slate-900"
+                    />
+                    <span className="text-[11px] text-slate-500 mt-0.5 block">
+                      📷 Ảnh chụp hiện trường
+                    </span>
+                  </div>
+                ) : parsedGps ? (
+                  <div className="mt-1 flex items-center space-x-2 text-xs">
+                    <MapPin className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                    <span className="font-mono font-bold text-slate-800">
+                      {parsedGps.latitude.toFixed(6)}°, {parsedGps.longitude.toFixed(6)}°
+                      {parsedGps.accuracy ? ` (±${parsedGps.accuracy}m)` : ''}
+                    </span>
+                    <a
+                      href={`https://www.google.com/maps?q=${parsedGps.latitude},${parsedGps.longitude}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-700 inline-flex items-center space-x-0.5 font-semibold text-[11px]"
+                    >
+                      <span>Bản đồ</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                ) : (
+                  <span className="text-slate-900 font-medium whitespace-pre-wrap">
+                    {formatAnswerValue(ans.value)}
+                  </span>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

@@ -446,6 +446,24 @@ export const DANANG_ENVIRONMENT_SURVEY: Survey = {
       required: false,
       order: 27,
       placeholder: 'Chia sẻ lý do và mức độ sẵn sàng tham gia của bạn...'
+    },
+
+    // PHẦN 7. GHI NHẬN THỰC ĐỊA (FIELD SURVEY NATIVE)
+    {
+      id: 'q28_anh_hien_truong',
+      type: 'image',
+      title: 'Hình ảnh hiện trường (Camera thực tế):',
+      description: 'PHẦN 7. GHI NHẬN THỰC ĐỊA - Chụp ảnh rác thải, khu vực ô nhiễm hoặc điểm cần cải tạo',
+      required: false,
+      order: 28
+    },
+    {
+      id: 'q29_vi_tri_gps',
+      type: 'location',
+      title: 'Tọa độ GPS điểm khảo sát:',
+      description: 'Lấy vị trí GPS vệ tinh chính xác tại thời điểm khảo sát thực địa',
+      required: false,
+      order: 29
     }
   ]
 };

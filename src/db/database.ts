@@ -28,7 +28,7 @@ export async function seedInitialDataIfNeeded(): Promise<void> {
   try {
     // 1. Luôn đảm bảo bộ câu hỏi Khảo sát Môi trường Đà Nẵng (27 câu) có sẵn trong IndexedDB
     const existingDaNang = await db.surveys.get(DANANG_ENVIRONMENT_SURVEY_ID);
-    if (!existingDaNang) {
+    if (!existingDaNang || existingDaNang.questions.length < DANANG_ENVIRONMENT_SURVEY.questions.length) {
       await db.surveys.put(DANANG_ENVIRONMENT_SURVEY);
     }
 

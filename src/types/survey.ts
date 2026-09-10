@@ -5,7 +5,9 @@ export type QuestionType =
   | 'multiple_choice'
   | 'number'
   | 'rating'
-  | 'yes_no';
+  | 'yes_no'
+  | 'image'
+  | 'location';
 
 export type SurveyStatus = 'draft' | 'published' | 'archived';
 
