@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "apk:copy": "node scripts/copy-apk.mjs",
+    "build": "npm run apk:copy && tsc && vite build",
     "preview": "vite preview",
     "server": "node server/index.js",
     "server:dev": "node --watch server/index.js",

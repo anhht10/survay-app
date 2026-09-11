@@ -2,6 +2,7 @@ import React from 'react';
 import { useNetworkStatus } from '../../hooks/useNetworkStatus';
 import { useInstallPrompt } from '../../hooks/useInstallPrompt';
 import { WifiOff, RefreshCw, Plus, FileText, CheckSquare, HelpCircle, Download } from 'lucide-react';
+import { ENV } from '../../config/env';
 
 interface HeaderProps {
   activeTab: 'surveys' | 'responses' | 'new';
@@ -16,6 +17,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { isOnline, isSyncing } = useNetworkStatus();
   const { canInstall, install } = useInstallPrompt();
+  const hasApkDownload = ENV.APK_URL.trim().length > 0;
 
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200">
@@ -64,7 +66,23 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
-          {/* Test Lab Button */}
+          {/* APK Download Button */}
+          {hasApkDownload && (
+            <a
+              href={ENV.APK_URL}
+              download
+              target="_blank"
+              rel="noreferrer"
+              title="Tải file APK"
+              aria-label="Tải file APK"
+              className="inline-flex items-center gap-1.5 min-h-[36px] rounded-xl bg-slate-900 px-3 text-xs font-bold text-white shadow-sm transition-colors hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+            >
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Tải APK</span>
+            </a>
+          )}
+
+          {/* Install PWA Button */}
           {canInstall && (
             <button
               onClick={install}
