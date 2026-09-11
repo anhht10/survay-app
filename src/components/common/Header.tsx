@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNetworkStatus } from '../../hooks/useNetworkStatus';
 import { useInstallPrompt } from '../../hooks/useInstallPrompt';
-import { WifiOff, RefreshCw, Plus, FileText, CheckSquare, HelpCircle, Download } from 'lucide-react';
+import { WifiOff, RefreshCw, Plus, FileText, CheckSquare, HelpCircle, Download, Smartphone } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 import { ENV } from '../../config/env';
+import { Modal } from './Modal';
 
 interface HeaderProps {
   activeTab: 'surveys' | 'responses' | 'new';
@@ -18,6 +20,13 @@ export const Header: React.FC<HeaderProps> = ({
   const { isOnline, isSyncing } = useNetworkStatus();
   const { canInstall, install } = useInstallPrompt();
   const hasApkDownload = ENV.APK_URL.trim().length > 0;
+  const isNativeApp = Capacitor.isNativePlatform();
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+
+  const handleInstallPwa = async () => {
+    setIsDownloadModalOpen(false);
+    await install();
+  };
 
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200">
@@ -66,32 +75,16 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
-          {/* APK Download Button */}
-          {hasApkDownload && (
-            <a
-              href={ENV.APK_URL}
-              download
-              target="_blank"
-              rel="noreferrer"
-              title="Tải file APK"
-              aria-label="Tải file APK"
+          {/* Download chooser button */}
+          {!isNativeApp && (hasApkDownload || canInstall) && (
+            <button
+              onClick={() => setIsDownloadModalOpen(true)}
+              title="Tải xuống"
+              aria-label="Tải xuống"
               className="inline-flex items-center gap-1.5 min-h-[36px] rounded-xl bg-slate-900 px-3 text-xs font-bold text-white shadow-sm transition-colors hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
             >
               <Download className="h-4 w-4" />
-              <span className="hidden sm:inline">Tải APK</span>
-            </a>
-          )}
-
-          {/* Install PWA Button */}
-          {canInstall && (
-            <button
-              onClick={install}
-              title="Cài SurveyApp vào thiết bị"
-              aria-label="Cài SurveyApp vào thiết bị"
-              className="inline-flex items-center gap-1.5 min-h-[36px] rounded-xl bg-blue-600 px-3 text-xs font-bold text-white shadow-sm shadow-blue-200 transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              <Download className="h-4 w-4" />
-              <span className="hidden sm:inline">Cài ứng dụng</span>
+              <span className="hidden sm:inline">Tải xuống</span>
             </button>
           )}
 
@@ -146,6 +139,49 @@ export const Header: React.FC<HeaderProps> = ({
           <span>Tạo mới</span>
         </button>
       </div>
+
+      <Modal
+        isOpen={isDownloadModalOpen}
+        onClose={() => setIsDownloadModalOpen(false)}
+        title="Chọn bản tải xuống"
+        maxWidth="sm"
+      >
+        <div className="space-y-3">
+          {hasApkDownload && (
+            <a
+              href={ENV.APK_URL}
+              download
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setIsDownloadModalOpen(false)}
+              className="w-full flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-left transition-colors hover:bg-slate-50"
+            >
+              <div className="w-11 h-11 rounded-2xl bg-slate-900 text-white flex items-center justify-center shrink-0">
+                <Download className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-semibold text-slate-900">Tải APK</p>
+                <p className="text-sm text-slate-500">File cài đặt Android để cài trực tiếp lên máy</p>
+              </div>
+            </a>
+          )}
+
+          {canInstall && (
+            <button
+              onClick={handleInstallPwa}
+              className="w-full flex items-center gap-3 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-left transition-colors hover:bg-blue-100"
+            >
+              <div className="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0">
+                <Smartphone className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-semibold text-blue-900">Cài bản web</p>
+                <p className="text-sm text-blue-700">Cài app web vào màn hình chính của thiết bị</p>
+              </div>
+            </button>
+          )}
+        </div>
+      </Modal>
     </header>
   );
 };
