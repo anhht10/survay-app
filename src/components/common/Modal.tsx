@@ -7,6 +7,7 @@ interface ModalProps {
   title?: string;
   children: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg';
+  presentation?: 'sheet' | 'dialog';
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -14,7 +15,8 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   title,
   children,
-  maxWidth = 'md'
+  maxWidth = 'md',
+  presentation = 'sheet'
 }) => {
   useEffect(() => {
     if (isOpen) {
@@ -35,8 +37,18 @@ export const Modal: React.FC<ModalProps> = ({
     lg: 'max-w-lg'
   }[maxWidth];
 
+  const containerClass =
+    presentation === 'dialog'
+      ? 'absolute inset-0 z-50 flex items-start sm:items-center justify-center p-4 pt-20 sm:pt-4 overflow-y-auto'
+      : 'absolute inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4';
+
+  const cardClass =
+    presentation === 'dialog'
+      ? `relative bg-white w-full ${widthClass} rounded-3xl shadow-2xl z-10 overflow-hidden max-h-[calc(100vh-6rem)] sm:max-h-[90vh] flex flex-col transition-all duration-200`
+      : `relative bg-white w-full ${widthClass} rounded-t-3xl sm:rounded-2xl shadow-2xl z-10 overflow-hidden max-h-[90vh] flex flex-col transition-all duration-200`;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div className={containerClass}>
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
@@ -44,7 +56,7 @@ export const Modal: React.FC<ModalProps> = ({
       />
 
       {/* Modal Card / Bottom Sheet on Mobile */}
-      <div className={`relative bg-white w-full ${widthClass} rounded-t-3xl sm:rounded-2xl shadow-2xl z-10 overflow-hidden max-h-[90vh] flex flex-col transition-all duration-200`}>
+      <div className={cardClass}>
         {/* Header */}
         {title && (
           <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
